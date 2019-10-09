@@ -1,9 +1,13 @@
+import com.github.jengelman.gradle.plugins.shadow.tasks.ShadowJar
 import com.jfrog.bintray.gradle.BintrayExtension
 import com.jfrog.bintray.gradle.tasks.BintrayUploadTask
+import org.gradle.api.publish.maven.MavenPom
 
 plugins {
     kotlin("multiplatform") version "1.3.50"
     `maven-publish`
+    `java-library`
+    id("com.github.johnrengelman.shadow") version "5.1.0"
     id("com.jfrog.bintray") version "1.8.4"
 }
 
@@ -46,16 +50,51 @@ kotlin {
     }
 }
 
+/*
+ @see https://kotlinexpertise.com/kotlinlibrarydistibution/
+ By default, the generated POM does not list the library dependencies, which is done by mapping each compile dependency
+ to a valid dependency XML node.
+ */
+fun MavenPom.addDependencies() = withXml {
+    asNode().appendNode("dependencies").let { depNode ->
+        configurations.compile.allDependencies.forEach {
+            depNode.appendNode("dependency").apply {
+                appendNode("groupId", it.group)
+                appendNode("artifactId", it.name)
+                appendNode("version", it.version)
+            }
+        }
+    }
+}
+
+
+val craftktArtifactId = "craftkt"
+
+val shadowJar: ShadowJar by tasks
+shadowJar.apply {
+    baseName = craftktArtifactId
+    classifier = null
+}
+
+publishing {
+    publications {
+        create<MavenPublication>("maven") {
+            artifactId = craftktArtifactId
+//            from(components["java"])
+            artifact(shadowJar)
+            pom.addDependencies()
+        }
+    }
+}
+
 bintray {
     val bintrayUser: String by project
     val bintrayApiKey: String by project
     user = bintrayUser
     key = bintrayApiKey
 
-    publish = false
-
     pkg(delegateClosureOf<BintrayExtension.PackageConfig> {
-        name = "CraftKt"
+        name = craftktArtifactId
         repo = "CraftKt"
         userOrg = "nies"
         websiteUrl = "https://nies.dev"
@@ -72,17 +111,12 @@ bintray {
 
 tasks {
     val bintrayUpload by existing(BintrayUploadTask::class) {
+        dependsOn("publishToMavenLocal")
         doFirst {
-            //            val publications = publishing.publications.map {
-//                it.name
-//            }
-//
-//            publications.forEach { println(it) }
-//
-//            setPublications(publishing.publications.map {
-//                it.name
-//            })
-            setPublications("jvm")
+            val publications = publishing.publications.map {
+                it.name
+            }.toTypedArray()
+            setPublications(*publications)
         }
     }
 }
