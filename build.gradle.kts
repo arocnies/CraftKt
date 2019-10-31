@@ -19,11 +19,11 @@ repositories {
 }
 
 kotlin {
-    /* Targets configuration omitted. 
-    *  To find out how to configure the targets, please follow the link:
+    /*  To find out how to configure the targets, please follow the link:
     *  https://kotlinlang.org/docs/reference/building-mpp-with-gradle.html#setting-up-targets */
     jvm()
 
+    @Suppress("UNUSED_VARIABLE")
     sourceSets {
         val commonMain by getting {
             dependencies {
@@ -55,6 +55,7 @@ kotlin {
  By default, the generated POM does not list the library dependencies, which is done by mapping each compile dependency
  to a valid dependency XML node.
  */
+@Suppress("DEPRECATION")
 fun MavenPom.addDependencies() = withXml {
     asNode().appendNode("dependencies").let { depNode ->
         configurations.compile.allDependencies.forEach {
@@ -109,6 +110,7 @@ bintray {
     })
 }
 
+@Suppress("UNUSED_VARIABLE")
 tasks {
     val bintrayUpload by existing(BintrayUploadTask::class) {
         dependsOn("publishToMavenLocal")
