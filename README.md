@@ -1,5 +1,11 @@
 A library for performing iterative and incremental transformations.
 
+Similar to annotation processing, elements are processed like an `AssemblyLine`.
+Steps in the assembly line are called `processors`. 
+
+Processors perform their work and may mark the element to be sent back through the
+assembly line.
+
 ## Setup
 See: [Creating a personal access token for the command line](https://help.github.com/en/github/authenticating-to-github/creating-a-personal-access-token-for-the-command-line)
 
