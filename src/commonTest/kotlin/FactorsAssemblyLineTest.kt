@@ -3,15 +3,15 @@ package dev.nies.craft
 import kotlin.test.Test
 import kotlin.test.assertEquals
 
-class FactorsJobTest {
+class FactorsAssemblyLineTest {
     @Test fun `12 factors into 2, 2, 3`() {
-        val factorsJob = Job<MutableList<Int>>()
+        val factorsAssemblyLine = AssemblyLine<MutableList<Int>>()
         val factors = mutableListOf(12)
 
-        factorsJob.install(FactorProcessor(2))
-        factorsJob.install(FactorProcessor(3))
+        factorsAssemblyLine.install(FactorProcessor(2))
+        factorsAssemblyLine.install(FactorProcessor(3))
 
-        factorsJob.process(factors)
+        factorsAssemblyLine.process(factors)
         assertEquals(listOf(2, 2, 3), factors.sorted())
     }
 }

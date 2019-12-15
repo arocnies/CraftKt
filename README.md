@@ -1,29 +1,46 @@
 A library for performing iterative and incremental transformations.
 
+Similar to annotation processing, elements are processed like an `AssemblyLine`.
+Steps in the assembly line are called `processors`. 
 
+Processors perform their work and may mark the element to be sent back through the
+assembly line.
 
-# Example
+## Setup
+See: [Creating a personal access token for the command line](https://help.github.com/en/github/authenticating-to-github/creating-a-personal-access-token-for-the-command-line)
+
+**Gradle (Kotlin DSL)**
 ```kotlin
-// Simple
-class FactorsCrafter: Crafter<Int> {
-    override fun craft(original: Int): List<Int>? {
-        if (original.isPrime()) { 
-            return null 
-        } else {
-            original.getFactors()
+repositories {
+    maven {
+        url = uri("https://maven.pkg.github.com/arocnies/CraftKt")
+        credentials {
+            username = project.findProperty("gpr.user") as String? ?: System.getenv("GPR_USER")
+            password = project.findProperty("gpr.key") as String? ?: System.getenv("GPR_API_KEY")
         }
     }
-    // ... //
 }
-```
-```kotlin
-fun main() {
-    val factorsCraft = Craft<Int>()
 
-    factorsCraft.install(FactorsCrafter())
-    
-    val factors: List<Int> = factorsCraft.process(listOf(12))
+dependencies {
+    implementation("dev.nies:CraftKt-jvm:VERSION")
 }
 ```
 
-Factors example: `12` -> `2`, `6` -> `2`, `2`, `3`
+**Gradle (Groovy DSL)**
+```groovy
+repositories { /* ... */ }
+
+dependencies {
+    implementation 'dev.nies:CraftKt-jvm:VERSION'
+}
+```
+
+**Maven**
+```xml
+<!-- See https://help.github.com/en/github/managing-packages-with-github-package-registry/configuring-apache-maven-for-use-with-github-package-registry -->
+<dependency>
+  <groupId>dev.nies</groupId>
+  <artifactId>CraftKt-jvm</artifactId>
+  <version>VERSION</version>
+</dependency>
+```

@@ -3,7 +3,7 @@ package dev.nies.craft
 import kotlin.test.Test
 import kotlin.test.assertEquals
 
-class WordSplitRecipeTest {
+class WordSplitAssemblyLineTest {
     val testString = """
         1@2@3
         4#5#6
@@ -11,14 +11,14 @@ class WordSplitRecipeTest {
     """
 
     @Test fun `Word is split by multiple recipes`() {
-        val splitJob = Job<MutableList<String>>()
-        splitJob.install(StringSplitProcessor("\n"))
-        splitJob.install(StringSplitProcessor("@"))
-        splitJob.install(StringSplitProcessor("#"))
-        splitJob.install(StringSplitProcessor("&"))
+        val splitAssemblyLine = AssemblyLine<MutableList<String>>()
+        splitAssemblyLine.install(StringSplitProcessor("\n"))
+        splitAssemblyLine.install(StringSplitProcessor("@"))
+        splitAssemblyLine.install(StringSplitProcessor("#"))
+        splitAssemblyLine.install(StringSplitProcessor("&"))
 
         val stringContainer = mutableListOf(testString)
-        splitJob.process(stringContainer)
+        splitAssemblyLine.process(stringContainer)
 
         assertEquals(
             mutableListOf("1", "2", "3", "4", "5", "6", "7", "8", "9"),
